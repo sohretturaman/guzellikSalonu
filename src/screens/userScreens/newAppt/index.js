@@ -104,6 +104,7 @@ const Schedule = () => {
 
   const takeAppointment = (day) => {
     console.log('data from day', day);
+    // take day and time info to display on schedule screen
   } 
   const renderItem = (item) => {
     return (
