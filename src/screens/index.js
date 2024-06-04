@@ -13,6 +13,7 @@ import Videos from './userScreens/videos';
 import PastAppts from './userScreens/pastAppts';
 import Schedule from './userScreens/schedule';
 import NewAppointment from './userScreens/newAppt';
+import EditEvent from './userScreens/EditEvent.js';
 export {
   Login,
   Signup,
@@ -28,5 +29,6 @@ export {
   Videos,
   PastAppts,
   Schedule,
-  NewAppointment
+  NewAppointment,
+  EditEvent
 };

@@ -16,5 +16,6 @@ export default RouterNames = {
   CONTACT: 'Contact',
   VIDEOS: 'Videos',
   SCHEDULE:'Schedule',
-  NEW_APPOINTMENT:'NewAppointment'
+  NEW_APPOINTMENT:'NewAppointment',
+  EDIT_EVENT:'EditEvent',
 };
