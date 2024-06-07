@@ -1,154 +1,183 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity, Text} from 'react-native';
+import {View, TouchableOpacity, Dimensions, FlatList} from 'react-native';
 import {Agenda} from 'react-native-calendars';
-import {Card, Avatar} from 'react-native-paper';
+import {Card, FAB} from 'react-native-paper';
+import DatePicker from 'react-native-date-picker';
+import styles from './styles';
+import CalendarData from '../../../data';
+import {RouterNames} from '../../../config';
+import CalendarEventItems from '../../../data/CalendarEventItems';
+import ModalComp from '../../../components/modal/Modal';
+import {Text} from '../../../components';
+import {COLORS} from '../../../assets';
 
-const Items = {
-  '2024-05-01': [
-    {height: 130, name: 'Item for 2024-05-01 #0'},
-    {height: 50, name: 'Item for 2024-05-01 #1'},
-    {height: 50, name: 'Item for 2024-05-01 #2'},
-  ],
-  '2024-05-02': [
-    {height: 96, name: 'Item for 2024-05-02 #0'},
-    {height: 123, name: 'Item for 2024-05-02 #1'},
-  ],
-  '2024-05-03': [
-    {height: 140, name: 'Item for 2024-05-03 #0'},
-    {height: 94, name: 'Item for 2024-05-03 #1'},
-    {height: 81, name: 'Item for 2024-05-03 #2'},
-  ],
-  '2024-05-05': [
-    {height: 63, name: 'Item for 2024-05-22 #0'},
-    {height: 51, name: 'Item for 2024-05-02 #1'},
-    {height: 50, name: 'Item for 2024-05-12 #2'},
-  ],
-  '2024-05-04': [
-    {height: 50, name: 'Item for 2024-05-05 #0'},
-    {height: 54, name: 'Item for 2024-05-05 #1'},
-    {height: 50, name: 'Item for 2024-05-05 #2'},
-  ],
-  '2024-05-06': [{height: 145, name: 'Item for 2024-05-06 #0'}],
-  '2024-05-07': [
-    {height: 97, name: 'Item for 2024-05-07 #0'},
-    {height: 107, name: 'Item for 2024-05-07 #1'},
-    {height: 106, name: 'Item for 2024-05-07 #2'},
-  ],
-  '2024-05-08': [
-    {height: 114, name: 'Item for 2024-05-08 #0'},
-    {height: 63, name: 'Item for 2024-05-08 #1'},
-    {height: 112, name: 'Item for 2024-05-08 #2'},
-  ],
-  '2024-05-09': [
-    {height: 68, name: 'Item for 2024-05-09 #0'},
-    {height: 87, name: 'Item for 2024-05-09 #1'},
-    {height: 123, name: 'Item for 2024-05-09 #2'},
-  ],
-  '2024-05-10': [
-    {height: 103, name: 'Item for 2024-05-10 #0'},
-    {height: 50, name: 'Item for 2024-05-10 #1'},
-  ],
-  '2024-05-11': [
-    {height: 50, name: 'Item for 2024-05-11 #0'},
-    {height: 117, name: 'Item for 2024-05-11 #1'},
-  ],
-  '2024-05-12': [
-    {height: 134, name: 'Item for 2024-05-12 #0'},
-    {height: 75, name: 'Item for 2024-05-12 #1'},
-    {height: 116, name: 'Item for 2024-05-12 #2'},
-  ],
-  '2024-05-13': [
-    {height: 123, name: 'Item for 2024-05-13 #0'},
-    {height: 50, name: 'Item for 2024-05-13 #1'},
-  ],
-  '2024-05-14': [{height: 77, name: 'Item for 2024-05-14 #0'}],
-  '2024-05-15': [
-    {height: 50, name: 'Item for 2024-05-15 #0'},
-    {height: 50, name: 'Item for 2024-05-15 #1'},
-  ],
-  '2024-05-16': [{height: 50, name: 'Item for 2024-05-16 #0'}],
-  '2024-05-17': [{height: 50, name: 'Item for 2024-05-17 #0'}],
-  '2024-05-18': [{height: 77, name: 'Item for 2024-05-18 #0'}],
-  '2024-05-19': [
-    {height: 72, name: 'Item for 2024-05-19 #0'},
-    {height: 50, name: 'Item for 2024-05-19 #1'},
-    {height: 59, name: 'Item for 2024-05-19 #2'},
-  ],
-  '2024-08-10': [
-    {height: 85, name: 'Item for 2024-08-10 #0'},
-    {height: 50, name: 'Item for 2024-08-10 #1'},
-    {height: 57, name: 'Item for 2024-08-10 #2'},
-  ],
-  '2024-08-11': [
-    {height: 58, name: 'Item for 2024-08-11 #0'},
-    {height: 55, name: 'Item for 2024-08-11 #1'},
-    {height: 63, name: 'Item for 2024-08-11 #2'},
-  ],
-};
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
-const timeToString = time => {
-  const date = new Date(time);
-  return date.toISOString().split('T')[0];
-};
+const Schedule = props => {
+  const {navigation} = props;
+  const [items, setItems] = useState(CalendarEventItems);
+  const [selectedDay, setSelectedDay] = useState('2024-05-16'); // Initialize with the current day
+  const [date, setDate] = useState(new Date(selectedDay));
+  const [open, setOpen] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [column, setColumn] = useState(2);
 
-const Schedule = () => {
-  const [items, setItems] = useState({});
+  const takeAppointment = day => {
+    console.log('data from day', day);
+    navigation.navigate(RouterNames.EDIT_EVENT, {EventData: day});
+  };
 
-  const loadItems = day => {
-    setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = timeToString(time);
-        if (!items[strTime]) {
-          items[strTime] = [];
-          const numItems = Math.floor(Math.random() * 3 + 1);
-          for (let j = 0; j < numItems; j++) {
-            items[strTime].push({
-              name: 'Item for ' + strTime + ' #' + j,
-              height: Math.max(50, Math.floor(Math.random() * 150)),
-            });
-          }
-        }
+  const renderItem = item => (
+    <TouchableOpacity
+      onPress={() => takeAppointment(item)}
+      style={{marginRight: 10, marginTop: 17, flex: 1}}>
+      <Card style={{height: item?.height}}>
+        <Card.Content>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            {item?.name ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}>
+                <Text text={item.name} />
+                <Text text={'Disable Time'} />
+              </View>
+            ) : (
+              <Text text={'No events'} />
+            )}
+          </View>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
+  );
+
+  const filteredItems = {
+    [selectedDay]: items[selectedDay] || [],
+  };
+
+  const generateMarkedDates = items => {
+    const markedDates = {};
+    Object.keys(items).forEach(key => {
+      markedDates[key] = {marked: true};
+    });
+    return markedDates;
+  };
+
+  const markedDates = generateMarkedDates(items);
+
+  const onDayPress = day => {
+    setSelectedDay(day.dateString);
+    setDate(new Date(day.dateString));
+  };
+
+  const onConfirmTime = date => {
+    setOpen(false);
+    setDate(date);
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const clock = `${hours % 12 || 12}:${minutes.toString().padStart(2, '0')} ${
+      hours >= 12 ? 'PM' : 'AM'
+    }`;
+
+    const newEvent = {height: 50, clock};
+
+    setItems(prevItems => {
+      const updatedItems = {...prevItems};
+      if (updatedItems[selectedDay]) {
+        updatedItems[selectedDay].push(newEvent);
+      } else {
+        updatedItems[selectedDay] = [newEvent];
       }
-      const newItems = {};
-      Object.keys(items).forEach(key => {
-        newItems[key] = items[key];
-      });
-      setItems(newItems);
-    }, 1000);
+      return updatedItems;
+    });
+
+    console.log('Updated items:', items);
   };
 
-  
-
-  const renderItem = item => {
-    return (
-      <TouchableOpacity style={{marginRight: 10, marginTop: 17}}>
-        <Card>
-          <Card.Content>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              <Text>{item.name}</Text>
-              <Avatar.Text label="J" /> 
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
-    );
+  const onSelectTime = ({clock}) => {
+    console.log('clock', clock);
+    navigation.navigate(RouterNames.CHOOSE_CATEGORY);
   };
+  const availableTimesOfDay = CalendarData[selectedDay] || [];
+
+  const AvailableTimesList = () => (
+    <View style={{flex: 1, padding: windowWidth * 0.05}}>
+      <FlatList
+        numColumns={column}
+        data={availableTimesOfDay}
+        renderItem={({item}) => (
+          <TouchableOpacity
+            onPress={() => onSelectTime(item.clock)}
+            style={{
+              margin: 5,
+              width: windowWidth * 0.3,
+              height: windowWidth * 0.1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginHorizontal: windowWidth * 0.05,
+              backgroundColor: COLORS.primary,
+              padding: windowWidth * 0.01,
+              borderRadius: windowWidth * 0.01,
+            }}>
+            <Text
+              text={item.clock}
+              textWeight={'bold'}
+              textSize={18}
+              textColor={'white'}
+            />
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'space-between'}}
+      />
+    </View>
+  );
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, height: windowHeight}}>
+      <Text
+        style={{margin: 10, fontSize: 20, color: 'gray'}}
+        text={'Set Your available Hours for Appointment, Add private events'}
+      />
+
+      <DatePicker
+        modal
+        mode="time"
+        open={open}
+        date={date}
+        title="Select Time"
+        confirmText="Confirm"
+        cancelText="Cancel"
+        onConfirm={onConfirmTime}
+        onCancel={() => setOpen(false)}
+      />
+
       <Agenda
-      minDate='2024-01-01'
-      maxDate='2025-01-01'
-        items={Items}
-       ///loadItemsForMonth={loadItems}
-        selected={'2024-05-16'}
+        minDate="2024-01-01"
+        maxDate="2025-01-01"
+        items={filteredItems}
+        markedDates={markedDates}
+        selected={selectedDay}
         renderItem={renderItem}
+        onDayPress={onDayPress}
+      />
+
+      <ModalComp modalVisible={modalVisible} setModalVisible={setModalVisible}>
+        <AvailableTimesList />
+      </ModalComp>
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => setModalVisible(true)}
       />
     </View>
   );

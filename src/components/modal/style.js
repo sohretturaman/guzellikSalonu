@@ -19,12 +19,14 @@ text: {
     fontWeight: '500',
 },
 innerContainer:{
-    height: winHeight * 0.32,
+    height: winHeight * 0.6,
     width: winWidth * 1,
-    borderRadius: winWidth * 0.04,
+    borderTopRightRadius: winWidth * 0.04,
+     borderTopLeftRadius: winWidth * 0.04,
     backgroundColor: 'white',
     alignItems:"center",
-    padding:winWidth*0.05
+    padding:winWidth*0.05,
+    
   },
   textInputContainer:{
     marginTop:winWidth*0.05

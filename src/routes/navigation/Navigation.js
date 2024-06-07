@@ -3,7 +3,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import DrawerNavigation from '../drawer/DrawerNavigation';
 import {RouterNames} from '../../config';
-import { EditEvent } from '../../screens';
+import { ChooseCategory, EditEvent } from '../../screens';
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
@@ -14,6 +14,7 @@ const Navigation = () => {
         component={DrawerNavigation}
       />
       <Stack.Screen name={RouterNames.EDIT_EVENT} component={EditEvent} />
+      <Stack.Screen name={RouterNames.CHOOSE_CATEGORY} component={ChooseCategory} />
     </Stack.Navigator>
   );
 };

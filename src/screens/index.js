@@ -14,6 +14,7 @@ import PastAppts from './userScreens/pastAppts';
 import Schedule from './userScreens/schedule';
 import NewAppointment from './userScreens/newAppt';
 import EditEvent from './userScreens/EditEvent.js';
+import ChooseCategory from './userScreens/ChooseCategory';
 export {
   Login,
   Signup,
@@ -30,5 +31,6 @@ export {
   PastAppts,
   Schedule,
   NewAppointment,
-  EditEvent
+  EditEvent,
+  ChooseCategory
 };

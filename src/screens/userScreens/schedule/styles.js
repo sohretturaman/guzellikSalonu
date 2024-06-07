@@ -11,6 +11,12 @@ container: {
     backgroundColor: '#F6F4F4',
     
 },
+fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: winWidth*0.2,
+  },
 
 
 

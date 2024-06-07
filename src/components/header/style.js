@@ -15,8 +15,9 @@ container: {
 ,
 text: {
     color: 'black',
-    fontSize: winWidth * 0.08,
+    fontSize: winWidth * 0.05,
     fontWeight: '800',
+    textAlign:'center'
 }
 });
 export default styles;
